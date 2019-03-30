@@ -48,6 +48,7 @@ jQuery(function ($) {
 			new Router({
 				'/:filter': function (filter) {
 					this.filter = filter;
+					this.save();
 					this.render();
 				}.bind(this)
 			}).init('/all');
@@ -70,7 +71,6 @@ jQuery(function ($) {
 			$('#toggle-all').prop('checked', this.getActiveTodos().length === 0);
 			this.renderFooter();
 			$('#new-todo').focus();
-			util.store('todos-jquery', this.todos);
 		},
 		renderFooter: function () {
 			var todoCount = this.todos.length;
@@ -91,6 +91,7 @@ jQuery(function ($) {
 				todo.completed = isChecked;
 			});
 
+			this.save();
 			this.render();
 		},
 		getActiveTodos: function () {
@@ -117,6 +118,7 @@ jQuery(function ($) {
 		destroyCompleted: function () {
 			this.todos = this.getActiveTodos();
 			this.filter = 'all';
+			this.save();
 			this.render();
 		},
 		// accepts an element from inside the `.item` div and
@@ -148,11 +150,13 @@ jQuery(function ($) {
 
 			$input.val('');
 
+			this.save();
 			this.render();
 		},
 		toggle: function (e) {
 			var i = this.indexFromEl(e.target);
 			this.todos[i].completed = !this.todos[i].completed;
+			this.save();
 			this.render();
 		},
 		edit: function (e) {
@@ -184,11 +188,16 @@ jQuery(function ($) {
 				this.todos[this.indexFromEl(el)].title = val;
 			}
 
+			this.save();
 			this.render();
 		},
 		destroy: function (e) {
 			this.todos.splice(this.indexFromEl(e.target), 1);
+			this.save();
 			this.render();
+		},
+		save: function() {
+			util.store('todos-jquery', this.todos);
 		}
 	};
 
